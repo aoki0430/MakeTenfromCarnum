@@ -15,18 +15,42 @@ class ProbremView extends StatefulWidget {
 }
 
 class ProbremViewState extends State<ProbremView> {
+  int _ans;
   String _inputEq = "";
-  int _correct = 0;
+  String _opeflag;
+  String _ansText = "";
   bool _isEnabledNum = true;
-  bool _isEnabledOperator = true;
+  bool _isEnabledOperator = false;
+  String carnum = "1234";
 
-  void _upDate(String text) {
-    print("object");
+  void _upDate(String text, String type) {
     setState(() {
       _inputEq += text;
       _isEnabledNum = !_isEnabledNum;
-      print(_isEnabledNum);
       _isEnabledOperator = !_isEnabledOperator;
+      if (_ans == null) {
+        print(text);
+        _ans = int.parse(text);
+      } else if (type == 'ope') {
+        _opeflag = text;
+        print(_opeflag);
+      } else if (type == 'num')  {
+        print(int.parse(text));
+        if (_opeflag == '+') {
+          print(_opeflag);
+          _ans = _ans + int.parse(text);
+        } else if (_opeflag == '-') {
+          print(_opeflag);
+          _ans = _ans - int.parse(text);
+        } else if (_opeflag == '×') {
+          print(_opeflag);
+          _ans = _ans * int.parse(text);
+        } else if (_opeflag == '÷') {
+          print(_opeflag);
+          _ans = _ans ~/ int.parse(text);
+        }
+      }
+      _ansText = _ans.toString();
     });
   }
   
@@ -36,27 +60,41 @@ class ProbremViewState extends State<ProbremView> {
       _inputEq = "";
       _isEnabledNum = true;
       _isEnabledOperator = false;
+      _ans = null;
     });
   }
 
-  void _checkEquation() {
-    if (_inputEq == "") {
-      setState((){
-        _correct=1; //正解
+  void _checkEquation(BuildContext context) {
+    if (_ans == 10) {
+      _showResult(context,true);
+      setState(() {
+        carnum = "1098";
       });
-    } else if (_inputEq == "") {
-      setState((){
-        _correct=2; //不正解
-      });
-    } else if (_inputEq == "") {
-      setState((){
-        _correct=3; //error
-      });
+    } else {
+      _showResult(context,false);
     }
+    _eraseEquation();
+  }
+
+  _showResult (BuildContext context,bool result) async{
+    OverlayState overlayState = Overlay.of(context);
+    OverlayEntry overlayEntry = OverlayEntry(builder: (context) => 
+      Align(alignment: Alignment.center,child: 
+      result ? Image.asset(
+          "assets/images/hanamaru.png",
+          fit: BoxFit.cover) 
+          : Image.asset(
+          "assets/images/inu_batsu.png",
+          fit: BoxFit.cover),
+      ),
+    );
+    overlayState.insert(overlayEntry);
+    await Future.delayed(Duration(seconds: 1));
+    overlayEntry.remove();
   }
 
   void onButtonPressed(BuildContext context) => Navigator.push(context, MaterialPageRoute(builder: (context) => Start3Widget()));
-  
+
   Widget keyBoardNum(BuildContext context, String text) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
@@ -71,8 +109,7 @@ class ProbremViewState extends State<ProbremView> {
             fontWeight: FontWeight.w700,
             fontSize: 30,
           ),),
-          // onPressed: () => null,
-        onPressed: !_isEnabledNum ? null : () => _upDate(text),
+        onPressed: !_isEnabledNum ? null : () => _upDate(text,"num"),
       )
     );
   }
@@ -90,12 +127,9 @@ class ProbremViewState extends State<ProbremView> {
           fontFamily: "Trebuchet MS",
           fontWeight: FontWeight.w700,
           fontSize: 30,
-        ),),
-        // onPressed: () =>  !_isEnabledOperator ? null : () {
-        //   _upDate(text);
-        // }
-        
-        onPressed: !_isEnabledOperator ? null : () => _upDate(text),
+        ),
+      ),
+      onPressed:  !_isEnabledOperator ? null : () => _upDate(text,"ope"),
     )
   );
   }
@@ -104,13 +138,6 @@ class ProbremViewState extends State<ProbremView> {
   Widget build(BuildContext context) {
     final double deviceHeight = MediaQuery.of(context).size.height;
     final double deviceWidth = MediaQuery.of(context).size.width;
-    final String carnum = "1234";
-    final List<String> carnumlist= [
-      carnum.substring(0,1),
-      carnum.substring(1,2),
-      carnum.substring(2,3),
-      carnum.substring(3,4),
-    ];
 
     return Scaffold(
       body: Container(
@@ -140,7 +167,7 @@ class ProbremViewState extends State<ProbremView> {
                   Positioned(
                     top: deviceHeight * 0.11,
                     child: Text(
-                      "横浜 530\nせ　12-34",
+                      "横浜 530\nせ　$carnum",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color.fromARGB(255, 5, 83, 32),
@@ -167,10 +194,10 @@ class ProbremViewState extends State<ProbremView> {
               ), 
               SizedBox(height: deviceHeight*0.01,),
               Row(children: [
-                keyBoardNum(context,carnumlist[0]),
-                keyBoardNum(context,carnumlist[1]),
-                keyBoardNum(context,carnumlist[2]),
-                keyBoardNum(context,carnumlist[3]),
+                keyBoardNum(context,carnum.substring(0,1)),
+                keyBoardNum(context,carnum.substring(1,2)),
+                keyBoardNum(context,carnum.substring(2,3)),
+                keyBoardNum(context,carnum.substring(3,4)),
               ],),
               Row(children: [
                 keyBoardOperator(context,"+"),
@@ -204,22 +231,22 @@ class ProbremViewState extends State<ProbremView> {
                 height: deviceHeight * 0.08,
                 width:  deviceWidth * 0.7,
                 child: ElevatedButton(child: 
-                  Text('できた！',
+                  Text(_ansText,
                       style: TextStyle(
                       color: Color.fromARGB(255, 5, 83, 32),
                       fontFamily: "Trebuchet MS",
                       fontWeight: FontWeight.w700,
                       fontSize: 30,
                       ),
-                    ),
+                  ),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.white,
                   onPrimary: Colors.black,
                   shape: const StadiumBorder(),
                 ),
-                onPressed: () => {},
+                onPressed: () => _checkEquation(context),
               ),
-              ),
+            ),
           ],
         ),
       ),
