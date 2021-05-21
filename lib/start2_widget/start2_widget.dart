@@ -5,9 +5,9 @@
 *  Created by [Author].
 *  Copyright © 2018 [Company]. All rights reserved.
     */
-
-import 'package:carnum/start3_widget/start3_widget.dart';
+import 'package:carnum/start2_widget/tennum_list.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 class ProbremView extends StatefulWidget {
   @override
@@ -16,12 +16,27 @@ class ProbremView extends StatefulWidget {
 
 class ProbremViewState extends State<ProbremView> {
   int _ans;
+  int numIndex = 0;
   String _inputEq = "";
   String _opeflag;
   String _ansText = "";
+  String _carnum = "";
   bool _isEnabledNum = true;
   bool _isEnabledOperator = false;
-  String carnum = "1234";
+
+  @override
+  void initState() {
+    super.initState();
+    _randamize();
+  }
+  void _randamize() {
+    var random = new math.Random();
+    numIndex = random.nextInt(NumList.length);
+    setState(() {
+      _carnum = NumList[numIndex].toString();
+      print(_carnum);
+    });
+  }
 
   void _upDate(String text, String type) {
     setState(() {
@@ -67,9 +82,7 @@ class ProbremViewState extends State<ProbremView> {
   void _checkEquation(BuildContext context) {
     if (_ans == 10) {
       _showResult(context,true);
-      setState(() {
-        carnum = "1098";
-      });
+      _randamize();
     } else {
       _showResult(context,false);
     }
@@ -92,8 +105,6 @@ class ProbremViewState extends State<ProbremView> {
     await Future.delayed(Duration(seconds: 1));
     overlayEntry.remove();
   }
-
-  void onButtonPressed(BuildContext context) => Navigator.push(context, MaterialPageRoute(builder: (context) => Start3Widget()));
 
   Widget keyBoardNum(BuildContext context, String text) {
     final double deviceWidth = MediaQuery.of(context).size.width;
@@ -167,7 +178,7 @@ class ProbremViewState extends State<ProbremView> {
                   Positioned(
                     top: deviceHeight * 0.11,
                     child: Text(
-                      "横浜 530\nせ　$carnum",
+                      "横浜 530\nせ　$_carnum",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color.fromARGB(255, 5, 83, 32),
@@ -194,10 +205,10 @@ class ProbremViewState extends State<ProbremView> {
               ), 
               SizedBox(height: deviceHeight*0.01,),
               Row(children: [
-                keyBoardNum(context,carnum.substring(0,1)),
-                keyBoardNum(context,carnum.substring(1,2)),
-                keyBoardNum(context,carnum.substring(2,3)),
-                keyBoardNum(context,carnum.substring(3,4)),
+                keyBoardNum(context,_carnum.substring(0,1)),
+                keyBoardNum(context,_carnum.substring(1,2)),
+                keyBoardNum(context,_carnum.substring(2,3)),
+                keyBoardNum(context,_carnum.substring(3,4)),
               ],),
               Row(children: [
                 keyBoardOperator(context,"+"),
@@ -231,7 +242,7 @@ class ProbremViewState extends State<ProbremView> {
                 height: deviceHeight * 0.08,
                 width:  deviceWidth * 0.7,
                 child: ElevatedButton(child: 
-                  Text(_ansText,
+                  Text("できた！",
                       style: TextStyle(
                       color: Color.fromARGB(255, 5, 83, 32),
                       fontFamily: "Trebuchet MS",

@@ -1,0 +1,2 @@
+sed "s/^/\"/g" tennumlist.txt > list.txt
+sed "s/$/\"/g" list.txt > list.txt

@@ -9,15 +9,29 @@
 import 'package:carnum/start2_widget/start2_widget.dart';
 import 'package:flutter/material.dart';
 
+class TopView extends StatefulWidget {
+  @override
+  TopViewState createState() => TopViewState();
+}
 
-class Start1Widget extends StatelessWidget {
+class TopViewState extends State<TopView> {
 
   void onButtonPressed(BuildContext context) => Navigator.push(context, MaterialPageRoute(builder: (context) =>ProbremView()));
   
-  void onPageControlValueChanged(BuildContext context) {
-  
+  Image carImage;
+
+  @override
+  void initState() {
+    super.initState();
+    carImage = Image.asset("assets/images/carfront.png");
   }
-  
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(carImage.image, context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final double deviceHeight = MediaQuery.of(context).size.height;
@@ -39,10 +53,8 @@ class Start1Widget extends StatelessWidget {
                     left: 0,
                     top: deviceHeight*0.1,
                     right: 0,
-                    child: Image.asset(
-                      "assets/images/carfront-3.png",
-                      fit: BoxFit.cover,
-                    ),
+                    child: carImage,
+                    // child: Image.asset("assets/images/carfront.png",fit: BoxFit.cover,),
                   ),
                   Positioned(
                     top: deviceHeight*0.49,
